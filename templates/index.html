@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal AI Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 40px 15px;
+        }
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px #0001;
+        }
+        h1 { color: #243b65; }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #243b65;
+            color: white;
+            border: 0;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #eef4ff;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Multimodal AI Assistant</h1>
+        <p>Upload an image and ask a question about it.</p>
+
+        <form id="questionForm">
+            <label>Choose an image</label>
+            <input type="file" name="image" accept="image/png,image/jpeg" required>
+
+            <label>Ask your question</label>
+            <input type="text" name="question"
+                   placeholder="What is in this picture?" required>
+
+            <button type="submit">Ask AI</button>
+        </form>
+
+        <div id="result" hidden></div>
+    </div>
+
+    <script>
+        const form = document.getElementById("questionForm");
+        const result = document.getElementById("result");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            result.hidden = false;
+            result.textContent = "Processing image...";
+
+            try {
+                const response = await fetch("/ask", {
+                    method: "POST",
+                    body: new FormData(form)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Request failed");
+                }
+
+                result.textContent = "AI Answer: " + data.answer;
+            } catch (error) {
+                result.textContent = "Error: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
